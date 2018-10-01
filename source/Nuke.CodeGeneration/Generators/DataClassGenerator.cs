@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using Nuke.CodeGeneration.Model;
 using Nuke.CodeGeneration.Writers;
 using Nuke.Common;
@@ -81,7 +80,6 @@ namespace Nuke.CodeGeneration.Generators
             return writer.WriteLine($"protected override Func<string, LogLevel> LogLevelParser => {logLevelParser};");
         }
 
-        
         private static void WritePropertyDeclaration(DataClassWriter writer, Property property)
         {
             if (property.CustomImpl)
@@ -101,7 +99,6 @@ namespace Nuke.CodeGeneration.Generators
             return $"[JsonProperty({property.Json.DoubleQuote()})]";
         }
 
-
         private static T WriteInternalPropertyWhenNeeded<T>(this T writer, Property property)
             where T : DataClassWriter
         {
@@ -110,7 +107,8 @@ namespace Nuke.CodeGeneration.Generators
             return writer.WriteLine($"internal {property.Type} {property.Name}Internal {{ get; set; }}{GetPropertyInitialization(property)}");
         }
 
-        private static T WritePublicProperty<T>(this T writer, Property property) where T : DataClassWriter
+        private static T WritePublicProperty<T>(this T writer, Property property)
+            where T : DataClassWriter
         {
             var type = GetPublicPropertyType(property);
             var implementation = GetPublicPropertyImplementation(property);
@@ -119,7 +117,6 @@ namespace Nuke.CodeGeneration.Generators
                 .WriteLine(GetJsonSerializationAttribute(property))
                 .WriteLine($"public virtual {type} {property.Name} {implementation}");
         }
-       
 
         private static string GetPropertyInitialization(Property property)
         {
@@ -175,12 +172,16 @@ namespace Nuke.CodeGeneration.Generators
                     .WriteLine("base.AssertValid();")
                     .ForEach(
                         validatedProperties.Select(GetAssertedProperty),
-                        assertedProperty => w.WriteLine($"ControlFlow.Assert({assertedProperty.assertion}, {AssertionWithValue(assertedProperty.assertion, assertedProperty.propertyName)});"))
+                        assertedProperty =>
+                            w.WriteLine(
+                                $"ControlFlow.Assert({assertedProperty.assertion}, {AssertionWithValue(assertedProperty.assertion, assertedProperty.propertyName)});"))
                 );
         }
 
         private static string AssertionWithValue(string assertion, string propertyName)
-            => $"{assertion} [{propertyName} = {{{propertyName}}}]".DoubleQuoteInterpolated();
+        {
+            return $"{assertion} [{propertyName} = {{{propertyName}}}]".DoubleQuoteInterpolated();
+        }
 
         private static (string assertion, string propertyName) GetAssertedProperty(Property property)
         {
@@ -208,10 +209,10 @@ namespace Nuke.CodeGeneration.Generators
                 return writer;
 
             var argumentAdditions = formatProperties.Select(GetArgumentAddition).ToList();
-            
+
             var settingsClass = writer.DataClass as SettingsClass;
             if (settingsClass?.Task.DefiniteArgument != null)
-                argumentAdditions.Insert(0, $"  .Add({settingsClass.Task.DefiniteArgument.DoubleQuote()})");
+                argumentAdditions.Insert(index: 0, $"  .Add({settingsClass.Task.DefiniteArgument.DoubleQuote()})");
 
             var hasArguments = argumentAdditions.Count > 0;
             if (hasArguments)

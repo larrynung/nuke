@@ -33,7 +33,5 @@ namespace Nuke.CodeGeneration.Model
 
         [Description("Obsolete message. Enumeration is marked as obsolete when specified.")]
         public string DeprecationMessage { get; set; }
-
-        
     }
 }

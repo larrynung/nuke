@@ -338,9 +338,5 @@ namespace Nuke.CodeGeneration.Generators
                     .ForEachWriteLine(modifications)
                     .WriteLine("return toolSettings;"));
         }
-
     }
-
-
-   
 }

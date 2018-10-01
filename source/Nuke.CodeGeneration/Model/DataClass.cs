@@ -41,8 +41,6 @@ namespace Nuke.CodeGeneration.Model
 
         [Description("Obsolete message. DataClass is marked as obsolete when specified.")]
         public string DeprecationMessage { get; set; }
-
-        
     }
 
     [UsedImplicitly]

@@ -21,8 +21,6 @@ namespace Nuke.CodeGeneration.Generators
             if (tool.Tasks.Count == 0 && !tool.CustomExecutable && tool.PathExecutable == null && tool.PackageId == null)
                 return;
 
-
-
             toolWriter
                 .WriteLine("[PublicAPI]")
                 .WriteLine("[ExcludeFromCodeCoverage]")
@@ -103,16 +101,15 @@ namespace Nuke.CodeGeneration.Generators
                 .WriteBlock(WriteMainTaskBlock);
         }
 
-
         private static void WriteMainTaskBlock(TaskWriter writer)
         {
             var task = writer.Task;
             writer
                 .WriteLine($"var toolSettings = configurator.InvokeSafe(new {task.SettingsClass.Name}());")
-                .WriteLineIfTrue(task.PreProcess, $"PreProcess(ref toolSettings);")
+                .WriteLineIfTrue(task.PreProcess, "PreProcess(ref toolSettings);")
                 .WriteLine($"var process = {GetProcessStart(task)};")
                 .WriteLine(GetProcessAssertion(task))
-                .WriteLineIfTrue(task.PostProcess, $"PostProcess(toolSettings);")
+                .WriteLineIfTrue(task.PostProcess, "PostProcess(toolSettings);")
                 .WriteLine(task.HasReturnValue()
                     ? "return (GetResult(process, toolSettings), process.Output);"
                     : "return process.Output;");
@@ -159,7 +156,8 @@ namespace Nuke.CodeGeneration.Generators
                 .WriteLine($"    {resolvers.Single()};");
         }
 
-        private static T WriteTaskSignature<T>(this T writer, IEnumerable<string> additionalParameterDeclarations = null) where T : TaskWriter
+        private static T WriteTaskSignature<T>(this T writer, IEnumerable<string> additionalParameterDeclarations = null)
+            where T : TaskWriter
         {
             var task = writer.Task;
             var parameterDeclarations = new List<string>();
@@ -174,6 +172,5 @@ namespace Nuke.CodeGeneration.Generators
                 .WriteObsoleteAttributeWhenObsolete(task)
                 .WriteLine($"public static {returnType} {task.GetTaskMethodName()}({parameterDeclarations.JoinComma()})");
         }
-
     }
 }
